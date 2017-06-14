@@ -1,36 +1,56 @@
 package durationlock
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
 
-type DurationLock struct {
+// Lock is the locking API struct.
+// It provides APIs to acquire a lock for a specified interval and
+// a try and release facility.
+type Lock struct {
 	sync.Mutex
 	locked   bool
 	duration time.Duration
 	timeout  *time.Timer
 }
 
-// Take the lock. Returns bool to indicate success or failure.
-func (tl *DurationLock) Take() bool {
-	tl.Lock()
-	defer tl.Unlock()
-	if tl.locked {
+// New lock object for a specified duration.
+// The lock needs to be 'Take()'n before it is considered held.
+func New(d time.Duration) *Lock {
+	return &Lock{duration: d}
+}
+
+// String implements the stringer interface.
+func (dl *Lock) String() string {
+	dl.Lock()
+	defer dl.Unlock()
+	if dl.locked {
+		return fmt.Sprintf("Locked for %v", dl.duration)
+	}
+	return "Unlocked"
+}
+
+// Take attempts to take the lock. Returns bool to indicate success or failure.
+func (dl *Lock) Take() bool {
+	dl.Lock()
+	defer dl.Unlock()
+	if dl.locked {
 		return false
 	}
-	tl.locked = true
-	tl.timeout = time.AfterFunc(tl.duration, tl.Release)
+	dl.locked = true
+	dl.timeout = time.AfterFunc(dl.duration, dl.Release)
 	return true
 }
 
 // Release the lock unconditionally.
-func (tl *DurationLock) Release() {
-	tl.Lock()
-	defer tl.Unlock()
-	if tl.timeout != nil {
-		tl.timeout.Stop()
-		tl.timeout = nil
+func (dl *Lock) Release() {
+	dl.Lock()
+	defer dl.Unlock()
+	if dl.timeout != nil {
+		dl.timeout.Stop()
+		dl.timeout = nil
 	}
-	tl.locked = false
+	dl.locked = false
 }
