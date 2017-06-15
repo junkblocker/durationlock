@@ -1,3 +1,6 @@
+// Package durationlock provides locks for a certain duration with
+// auto release at expiration of the duration.
+// A try mechanism and manual release are available.
 package durationlock
 
 import (
@@ -44,7 +47,7 @@ func (dl *Lock) Take() bool {
 	return true
 }
 
-// Release the lock unconditionally.
+// Release the lock. Trying to release a Lock which is not held is not an error.
 func (dl *Lock) Release() {
 	dl.Lock()
 	defer dl.Unlock()

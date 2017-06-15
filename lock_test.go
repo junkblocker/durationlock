@@ -1,6 +1,7 @@
 package durationlock_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -77,4 +78,14 @@ func TestDurationLock_Release(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ExampleLock_Take() {
+	l := durationlock.New(time.Second * 5)
+	if l.Take() {
+		fmt.Println("Lock acquired")
+	} else {
+		fmt.Println("Lock was already held")
+	}
+	// Output: Lock acquired
 }
