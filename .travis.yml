@@ -3,6 +3,7 @@ language: go
 go:
     - 1.7.5
     - 1.8.3
+    - 1.9
 
 before_install:
     - go get -u github.com/go-playground/overalls
