@@ -13,7 +13,6 @@ before_install:
     - go get -u github.com/go-playground/overalls
     - go get -u github.com/mattn/goveralls
     - go get -u golang.org/x/tools/cmd/cover
-    - go get -u github.com/golang/lint/golint
     - go get -u github.com/gordonklaus/ineffassign
 
 before_script:
@@ -21,7 +20,6 @@ before_script:
 
 script:
     - gofmt -d -s .
-    - golint ./...
     - ineffassign ./
     - go test -v ./...
     - go test -race
